@@ -4,12 +4,15 @@ namespace Laravel\Octane\Tests;
 
 use Illuminate\Contracts\Debug\ExceptionHandler;
 use Illuminate\Support\Carbon;
-use Laravel\Octane\Swoole\InvokeTickCallable;
+use Laravel\Octane\FrankenPhp\InvokeTickCallable;
 use Mockery;
 
-class InvokeTickCallableTest extends TestCase
+class FrankenPhpInvokeTickCallableTest extends TestCase
 {
-    public function test_callable_is_invoked_when_due()
+    /**
+     * @throws \Throwable
+     */
+    public function test_callable_is_invoked_when_due(): void
     {
         Carbon::setTestNow($now = now());
 
@@ -30,9 +33,12 @@ class InvokeTickCallableTest extends TestCase
         unset($_SERVER['__test.invokeTickCallable']);
     }
 
-    public function test_callable_is_not_invoked_when_not_due()
+    /**
+     * @throws \Throwable
+     */
+    public function test_callable_is_not_invoked_when_not_due(): void
     {
-        Carbon::setTestNow($now = now());
+        Carbon::setTestNow(now());
 
         $_SERVER['__test.invokeTickCallable'] = false;
 
@@ -53,7 +59,10 @@ class InvokeTickCallableTest extends TestCase
         unset($_SERVER['__test.invokeTickCallable']);
     }
 
-    public function test_callable_is_invoked_when_first_run_and_immediate()
+    /**
+     * @throws \Throwable
+     */
+    public function test_callable_is_invoked_when_first_run_and_immediate(): void
     {
         Carbon::setTestNow($now = now());
 
