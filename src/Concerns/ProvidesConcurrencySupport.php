@@ -3,6 +3,9 @@
 namespace Laravel\Octane\Concerns;
 
 use Laravel\Octane\Contracts\DispatchesTasks;
+use Laravel\Octane\FrankenPhp\FrankenPhpHttpTaskDispatcher;
+use Laravel\Octane\FrankenPhp\FrankenPhpTaskDispatcher;
+use Laravel\Octane\FrankenPhp\ServerStateFile as FrankenPhpServerStateFile;
 use Laravel\Octane\SequentialTaskDispatcher;
 use Laravel\Octane\Swoole\ServerStateFile;
 use Laravel\Octane\Swoole\SwooleHttpTaskDispatcher;
@@ -35,6 +38,12 @@ trait ProvidesConcurrencySupport
     {
         return match (true) {
             app()->bound(DispatchesTasks::class) => app(DispatchesTasks::class),
+            app()->bound(FrankenPhpServerStateFile::class) => new FrankenPhpTaskDispatcher(),
+            class_exists(FrankenPhpServerStateFile::class) => new FrankenPhpHttpTaskDispatcher(
+                '127.0.0.1',
+                '8000',
+                new SequentialTaskDispatcher
+            ),
             app()->bound(Server::class) => new SwooleTaskDispatcher,
             class_exists(Server::class) => (fn (array $serverState) => new SwooleHttpTaskDispatcher(
                 $serverState['state']['host'] ?? '127.0.0.1',
